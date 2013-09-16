@@ -2,8 +2,10 @@ module PgSearch
   module Features
     class Trigram < Feature
       def conditions
+        similarity = options[:similarity] || 0.3
         Arel::Nodes::Grouping.new(
-          Arel::Nodes::InfixOperation.new("%", normalized_document, normalize(query))
+          Arel::Nodes::InfixOperation.new(">",
+            Arel::Nodes::NamedFunction.new("similarity", [normalized_document, normalize(query)]) , similarity)
         )
       end
 
